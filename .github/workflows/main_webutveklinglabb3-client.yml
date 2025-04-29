@@ -23,7 +23,7 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B9012B03AE9C45F6864D8222D8820FDC }}
 
       - name: Ensure deployment slot is free
-        run: az webapp deployment slot swap --name 'webutveklinglabb3-client' --resource-group 'YourResourceGroup' --slot 'Production'
+        run: az webapp deployment slot swap --name 'webutveklinglabb3-client' --resource-group 'RG-yazanalnsierat' --slot 'Production'
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
