@@ -1,0 +1,13 @@
+appsettings.json
+appsettings.Development.json
+Properties/launchSettings.json
+.vs/
+.vscode/
+.vs/
+.vscode/
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.log

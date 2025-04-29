@@ -1,0 +1,96 @@
+﻿@page "/admin"
+@using Blazorapp_portfolio_lab3_WU.Models
+@inject HttpClient Http
+@inject IConfiguration Configuration
+
+<h2>Admin View</h2>
+<p>This view allows administrators to add new projects and skills to the portfolio. Fill in the details below and submit the forms to save the data.</p>
+
+<h3>Add New Project</h3>
+<EditForm Model="@newProject" OnValidSubmit="@HandleValidSubmit" FormName="Projects manager">
+    <DataAnnotationsValidator />
+    <ValidationSummary class="text-danger" role="alert" />
+
+    <div class="mb-3">
+        <label for="name" class="form-label">Project Name</label>
+        <InputText id="name" class="form-control" @bind-Value="newProject.Name" />
+        <ValidationMessage For="() => newProject.Name" class="text-danger" />
+    </div>
+    <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <InputTextArea id="description" class="form-control" @bind-Value="newProject.Description" />
+        <ValidationMessage For="() => newProject.Description" class="text-danger" />
+    </div>
+    <div class="mb-3">
+        <label for="link" class="form-label">Link</label>
+        <InputText id="link" class="form-control" @bind-Value="newProject.Link" />
+        <ValidationMessage For="() => newProject.Link" class="text-danger" />
+    </div>
+    <button type="submit" class="btn btn-primary">Add Project</button>
+</EditForm>
+<p class="text-success">@projectNotification</p>
+
+<h3>Add New Skill</h3>
+<EditForm Model="@newSkill" OnValidSubmit="@HandleSkillSubmit" FormName="Skills manager">
+    <DataAnnotationsValidator />
+    <ValidationSummary class="text-danger" role="alert" />
+
+    <div class="mb-3">
+        <label for="skillName" class="form-label">Skill Name</label>
+        <InputText id="skillName" class="form-control" @bind-Value="newSkill.Name" />
+        <ValidationMessage For="() => newSkill.Name" class="text-danger" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Skill Level</label>
+        <InputText id="SkillLevel" class="form-control" @bind-Value="newSkill.SkillLevel" />
+        <ValidationMessage For="() => newSkill.SkillLevel" class="text-danger" />
+    </div>
+    <div class="mb-3">
+        <label for="YearsOfExperience" class="form-label">Years Of Experience</label>
+        <InputNumber id="YearsOfExperience" class="form-control" @bind-Value="newSkill.YearsOfExperience" />
+        <ValidationMessage For="() => newSkill.YearsOfExperience" class="text-danger" />
+    </div>
+    <button type="submit" class="btn btn-primary">Add Skill</button>
+</EditForm>
+<p class="text-success">@skillNotification</p>
+
+@code {
+    [SupplyParameterFromForm(FormName = "Projects manager")]
+    private Project newProject { get; set; } = new Project();
+
+    [SupplyParameterFromForm(FormName = "Skills manager")]
+    private Skill newSkill { get; set; } = new Skill();
+
+    private string projectNotification = string.Empty;
+    private string skillNotification = string.Empty;
+
+    private async Task HandleValidSubmit()
+    {
+        var apiUrl = Configuration["Apiurl"];
+        var response = await Http.PostAsJsonAsync($"{apiUrl}/api/projects", newProject);
+        if (response.IsSuccessStatusCode)
+        {
+            projectNotification = "Project added successfully!";
+            newProject = new Project(); // Clear the form
+        }
+        else
+        {
+            projectNotification = "Failed to add project. Please try again.";
+        }
+    }
+
+    private async Task HandleSkillSubmit()
+    {
+        var apiUrl = Configuration["Apiurl"];
+        var response = await Http.PostAsJsonAsync($"{apiUrl}/api/talents", newSkill);
+        if (response.IsSuccessStatusCode)
+        {
+            skillNotification = "Skill added successfully!";
+            newSkill = new Skill(); // Clear the form
+        }
+        else
+        {
+            skillNotification = "Failed to add skill. Please try again.";
+        }
+    }
+}

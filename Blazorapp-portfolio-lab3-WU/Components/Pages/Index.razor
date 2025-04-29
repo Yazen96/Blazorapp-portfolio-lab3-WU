@@ -1,0 +1,86 @@
+﻿@page "/"
+@using Blazorapp_portfolio_lab3_WU.Models
+@inject HttpClient Http
+@inject IConfiguration Configuration
+@using System.Net
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-3 text-center">
+            <img src="images/profile.jpg" alt="Profile Picture of Yazan Alnsierat" class="img-fluid rounded-circle mb-3" />
+            <h2>Yazan Alnsierat</h2>
+            <p>Email: <a href="mailto:Yazenalnsierat@gmail.com">Yazenalnsierat@gmail.com</a></p>
+            <p>Phone: <a href="tel:+46728467013">(+46) 72 846 70 13</a></p>
+            <section class="mt-4">
+                <p>
+                    <a href="https://www.linkedin.com/in/yazan-alnsierat-619325254/" target="_blank" class="btn btn-outline-primary">LinkedIn</a>
+                    <a href="https://github.com/Yazen96" target="_blank" class="btn btn-outline-dark">GitHub</a>
+                </p>
+            </section>
+            <section class="text-start">
+                <h2>Skills</h2>
+                <ul class="list-group">
+                    @foreach (var skill in skills)
+                    {
+                        <li class="list-group-item">@skill.Name - @skill.YearsOfExperience years (@skill.SkillLevel)</li>
+                    }
+                </ul>
+            </section>
+        </div>
+        <div class="col-md-9">
+            <section>
+                <h2>Background</h2>
+                <p>
+                    I am meticulous, responsible, and have a strong work ethic. I thrive in team environments but am also self-driven when needed. I believe my strong communication skills and analytical thinking make me a valuable team member.
+                </p>
+            </section>
+            <section class="mt-4">
+                <h2>Education</h2>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5>IT Security Specialist, IT-Högskola</h5>
+                        <p>Aug 2022 — 2024</p>
+                        <p>Windows & Linux, Python, Networking, Virtualization and Cloud, Cryptography, Virus Analysis, Traceability, and Incident Management.</p>
+                    </div>
+                    <div class="col-md-12">
+                        <h5>Komvux</h5>
+                        <p>March 2016 — June 2021</p>
+                        <p>High school-level subjects such as Swedish, English, Physics, Chemistry, Mathematics, and Biology.</p>
+                    </div>
+                </div>
+            </section>
+            <section class="mt-4">
+                <h2>Projects</h2>
+                <div class="row">
+                    @foreach (var project in projects)
+                    {
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">@project.Name</h5>
+                                    <p class="card-text">@project.Description</p>
+                                    <a href="@project.Link" target="_blank" class="btn btn-primary">GitHub</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Skill> skills = new List<Skill>();
+    private List<Project> projects = new List<Project>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var apiUrl = Configuration["Apiurl"];
+        var skillsResponse = await Http.GetAsync($"{apiUrl}/api/talents");
+        skills = await skillsResponse.Content.ReadFromJsonAsync<List<Skill>>();
+
+        var projectsResponse = await Http.GetAsync($"{apiUrl}/api/projects");
+        projects = await projectsResponse.Content.ReadFromJsonAsync<List<Project>>();
+    }
+}
