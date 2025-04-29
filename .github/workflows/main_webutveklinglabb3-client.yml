@@ -22,8 +22,19 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E9A8C97E80CB4745B7D529EFE6BCBE5A }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B9012B03AE9C45F6864D8222D8820FDC }}
 
+      - name: Check slot status
+        run: |
+          az webapp deployment slot show \
+            --name 'webutveklinglabb3-client' \
+            --resource-group 'RG-yazanalnsierat' \
+            --slot 'Production' || echo "Slot not found, proceeding with deployment"
+
       - name: Ensure deployment slot is free
-        run: az webapp deployment slot swap --name 'webutveklinglabb3-client' --resource-group 'RG-yazanalnsierat' --slot 'Production'
+        run: |
+          az webapp deployment slot delete \
+            --name 'webutveklinglabb3-client' \
+            --resource-group 'RG-yazanalnsierat' \
+            --slot 'Production' --yes || echo "No active deployment in the slot"
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -31,4 +42,5 @@ jobs:
         with:
           app-name: 'webutveklinglabb3-client'
           slot-name: 'Production'
-          package: ${{ runner.temp }}/.net-app
+          package: ${{ runner.temp }}/_github_workflow/.net-app
+        retry: 3
